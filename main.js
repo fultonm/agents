@@ -1,70 +1,49 @@
-var AM = new AssetManager();
-
-function Animation(spriteSheet, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
-    this.spriteSheet = spriteSheet;
-    this.frameWidth = frameWidth;
-    this.frameDuration = frameDuration;
-    this.frameHeight = frameHeight;
-    this.sheetWidth = sheetWidth;
-    this.frames = frames;
-    this.totalTime = frameDuration * frames;
-    this.elapsedTime = 0;
-    this.loop = loop;
-    this.scale = scale;
+function Agent(game) {
+    this.game = game
+    this.path = []
+    this.pos = { x: 2, y: 2 }
+    this.decisionTimer = 0
+    this.decisionInterval = 2
+    var vec = getRandomVec()
 }
 
-Animation.prototype.drawFrame = function (tick, ctx, x, y) {
-    this.elapsedTime += tick;
-    if (this.isDone()) {
-        if (this.loop) this.elapsedTime = 0;
+Agent.prototype.constructor = Agent
+
+Agent.prototype.update = function () {
+    this.decisionTimer += this.game.clockTick
+    if (this.decisionTimer > this.decisionInterval) {
+        this.decisionTimer = 0
+        this.path.push(this.pos)
+        this.dx = getRandomVec() * 2
+        this.dy = getRandomVec() * 2
     }
-    var frame = this.currentFrame();
-    var xindex = 0;
-    var yindex = 0;
-    xindex = frame % this.sheetWidth;
-    yindex = Math.floor(frame / this.sheetWidth);
-
-    ctx.drawImage(this.spriteSheet,
-        xindex * this.frameWidth, yindex * this.frameHeight,  // source from sheet
-        this.frameWidth, this.frameHeight,
-        x, y,
-        this.frameWidth * this.scale,
-        this.frameHeight * this.scale);
+    this.pos.x += this.dx
+    this.pos.y += this.dy
 }
 
-Animation.prototype.currentFrame = function () {
-    return Math.floor(this.elapsedTime / this.frameDuration);
+Agent.prototype.draw = function () {
+    this.game.ctx.fillStyle = "#FFFFFF";
+    this.game.ctx.fillRect(this.pos.x, this.pos.y, 15, 15)
 }
 
-Animation.prototype.isDone = function () {
-    return (this.elapsedTime >= this.totalTime);
-}
-
-// no inheritance
-function Background(game, spritesheet) {
-    this.x = 0;
-    this.y = 0;
-    this.spritesheet = spritesheet;
-    this.game = game;
-    this.ctx = game.ctx;
-};
-
-Background.prototype.draw = function () {
-    this.ctx.drawImage(this.spritesheet,
-        this.x, this.y);
-};
-
-Background.prototype.update = function () {
-};
-
-
-AM.downloadAll(function () {
+window.onload = function () {
     var canvas = document.getElementById("gameWorld");
     var ctx = canvas.getContext("2d");
 
     var gameEngine = new GameEngine();
     gameEngine.init(ctx);
     gameEngine.start();
-
+    var agent = new Agent(gameEngine)
+    gameEngine.addEntity(agent)
     console.log("All Done!");
-});
+}
+
+function getRandomVec() {
+    var dx = Math.random() - 0.5
+    var dy = Math.random() - 0.5
+    var magnitude = Math.sqrt(dx * dx + dy * dy)
+    return {
+        dx: dx / magnitude,
+        dy: dy / magnitude
+    }
+}
