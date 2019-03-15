@@ -18,6 +18,16 @@ function Agent(game, home, food) {
 
 Agent.prototype.constructor = Agent
 
+Agent.prototype.save = function () {
+    const state = Object.assign({}, this)
+    delete state.game
+}
+
+Agent.prototype.load = function (game, state) {
+    Object.assign(this, state)
+    this.game = game
+}
+
 Agent.prototype.update = function () {
     if (this.searchingFood) {
         this.decisionTimer += this.game.clockTick
@@ -125,6 +135,16 @@ function Food(game) {
 
 Food.prototype.constructor = Food
 
+Food.prototype.save = function () {
+    const state = Object.assign({}, this)
+    delete state.game
+}
+
+Food.prototype.load = function (game, state) {
+    Object.assign(this, state)
+    this.game = game
+}
+
 Food.prototype.update = function () {
 
 }
@@ -143,6 +163,16 @@ function Home(game) {
 }
 
 Home.prototype.constructor = Food
+
+Home.prototype.save = function () {
+    const state = Object.assign({}, this)
+    delete state.game
+}
+
+Home.prototype.load = function (game, state) {
+    Object.assign(this, state)
+    this.game = game
+}
 
 Home.prototype.update = function () {
 
@@ -167,7 +197,7 @@ window.onload = function () {
     for (var i = 0; i < 1; i++) {
         gameEngine.addEntity(new Agent(gameEngine, home, food))
     }
-
+    window.gameEngine = gameEngine
     console.log("All Done!");
 }
 

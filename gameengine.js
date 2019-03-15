@@ -63,6 +63,41 @@ GameEngine.prototype.loop = function () {
     this.draw();
 }
 
+GameEngine.prototype.save = function () {
+    const state = {
+        home: {},
+        food: {},
+        entities: []
+    }
+
+    for (let i = 0; i < this.entities.length; i++) {
+        const entity = this.entities[i]
+        if (entity instanceof Agent) {
+            state.entities.push(this.entities[i].save())
+        } else if (entity instanceof Food) {
+            state.food = entity.save()
+        } else if (entity instanceof Home) {
+            state.home = entity.save()
+        }
+    }
+
+    if (window.sock === null) {
+        window.sock = io.connect('24.16.255.56:8888')
+    }
+    window.sock.on('connect', () => {
+        window.sock.emit('save', {
+            studentname: 'michaelf',
+            statename: 'antstate',
+            state: state
+        })
+    })
+
+}
+
+GameEngine.prototype.load = function () {
+
+}
+
 function Timer() {
     this.gameTime = 0;
     this.maxStep = 0.05;

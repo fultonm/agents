@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>Game Project Shell</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
     <script type="text/javascript" src="./gameengine.js"></script>
     <script type="text/javascript" src="./main.js"></script>
 </head>
@@ -11,6 +12,8 @@
 <body>
     <canvas id="gameWorld" tabindex="1" width="320" height="320"
         style="border: 1px solid brown; background: lightskyblue"></canvas>
+    <button type="button" onclick="window.gameEngine.save()">Save</button>
+    <button type="button" onclick="window.gameEngine.load()">Load</button>
 </body>
 
 </html>
