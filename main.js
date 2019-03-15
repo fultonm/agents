@@ -14,6 +14,7 @@ function Agent(game, home, food) {
     this.dx = vec.x
     this.dy = vec.y
     this.speed = 2.5
+    this.type = 'agent'
 }
 
 Agent.prototype.constructor = Agent
@@ -21,6 +22,7 @@ Agent.prototype.constructor = Agent
 Agent.prototype.save = function () {
     const state = Object.assign({}, this)
     delete state.game
+    return state
 }
 
 Agent.prototype.load = function (game, state) {
@@ -131,6 +133,7 @@ function Food(game) {
         x: this.game.ctx.canvas.width - 50,
         y: this.game.ctx.canvas.height - 50
     }
+    this.type = 'food'
 }
 
 Food.prototype.constructor = Food
@@ -138,6 +141,7 @@ Food.prototype.constructor = Food
 Food.prototype.save = function () {
     const state = Object.assign({}, this)
     delete state.game
+    return state
 }
 
 Food.prototype.load = function (game, state) {
@@ -160,6 +164,7 @@ function Home(game) {
         x: 30,
         y: 30
     }
+    this.type = 'home'
 }
 
 Home.prototype.constructor = Food
@@ -167,6 +172,7 @@ Home.prototype.constructor = Food
 Home.prototype.save = function () {
     const state = Object.assign({}, this)
     delete state.game
+    return state
 }
 
 Home.prototype.load = function (game, state) {
@@ -186,10 +192,8 @@ Home.prototype.draw = function () {
 window.onload = function () {
     var canvas = document.getElementById("gameWorld");
     var ctx = canvas.getContext("2d");
-
     var gameEngine = new GameEngine();
     gameEngine.init(ctx);
-    gameEngine.start();
     var food = new Food(gameEngine)
     var home = new Home(gameEngine)
     gameEngine.addEntity(home)
@@ -199,6 +203,11 @@ window.onload = function () {
     }
     window.gameEngine = gameEngine
     console.log("All Done!");
+    this.sock = io.connect('24.16.255.56:8888')
+    this.sock.on('connect', () => {
+        
+        gameEngine.start();
+    })
 }
 
 function getRandomVec() {
