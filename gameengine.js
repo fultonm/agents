@@ -71,52 +71,17 @@ GameEngine.prototype.save = function () {
         const entity = this.entities[i]
         state.entities.push(entity.save())
     }
-    this.sock = io.connect('24.16.255.56:8888')
-
-    this.sock.on('connect', () => {
-        this.sock.emit('save', {
-            studentname: 'michaelf',
-            statename: 'antstate',
-            state: state
-        })
+    this.sock.emit('save', {
+        studentname: 'michaelf',
+        statename: 'antstate',
+        state: state
     })
 }
 
 GameEngine.prototype.load = function () {
-    const state = {
-        entities: []
-    }
-    for (let i = 0; i < this.entities.length; i++) {
-        const entity = this.entities[i]
-        state.entities.push(entity.save())
-    }
-    this.sock = io.connect('24.16.255.56:8888')
-
     this.sock.emit('load', {
         studentname: 'michaelf',
         statename: 'antstate'
-    }, function (response) {
-        let home = ''
-        let food = ''
-        const entities = response.entities
-        for (let i = 0; i < entities.length; i++) {
-            switch (entity.type) {
-                case 'home':
-                    home = new Home(this)
-                    this.addEntity(home)
-                    break;
-                case 'food':
-                    food = new Food(this)
-                    this.addEntity(food)
-                    break;
-            }
-        }
-        for (let i = 0; i < entities.length; i++) {
-            switch (entity.type) {
-                case 'agent':
-                    this.addEntity(new Agent(this, home, food))
-            }
-        }
     })
 }
 

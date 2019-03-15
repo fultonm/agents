@@ -22,6 +22,8 @@ Agent.prototype.constructor = Agent
 Agent.prototype.save = function () {
     const state = Object.assign({}, this)
     delete state.game
+    delete state.food
+    delete state.home
     return state
 }
 
@@ -203,10 +205,44 @@ window.onload = function () {
     }
     window.gameEngine = gameEngine
     console.log("All Done!");
-    this.sock = io.connect('24.16.255.56:8888')
-    this.sock.on('connect', () => {
-        
+    gameEngine.sock = io.connect('24.16.255.56:8888')
+    gameEngine.sock.on('connect', () => {
         gameEngine.start();
+    })
+    gameEngine.sock.on('load', (response) => {
+        gameEngine.entities = []
+        let home = ''
+        let food = ''
+        const entities = response.state.entities
+        for (let i = 0; i < entities.length; i++) {
+            const entity = entities[i]
+            switch (entity.type) {
+                case 'home':
+                    home = new Home(gameEngine)
+                    gameEngine.addEntity(home)
+                    break;
+                case 'food':
+                    food = new Food(gameEngine)
+                    gameEngine.addEntity(food)
+                    break;
+                default:
+                    break;
+            }
+        }
+        for (let i = 0; i < entities.length; i++) {
+
+            const entity = entities[i]
+            switch (entity.type) {
+                case 'agent':
+                let agent = new Agent(gameEngine, home, food)
+                Object.assign(agent, entity)
+                gameEngine.addEntity(agent)
+            }
+        }
+    })
+    gameEngine.sock.on('save', (err, response) => {
+        console.log(err)
+        console.log(response)
     })
 }
 
