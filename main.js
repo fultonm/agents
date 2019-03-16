@@ -205,7 +205,9 @@ window.onload = function () {
     }
     window.gameEngine = gameEngine
     console.log("All Done!");
-    gameEngine.sock = io.connect('24.16.255.56:8888')
+    gameEngine.sock = io.connect('24.16.255.56:8888', {
+        secure: false
+    })
     gameEngine.sock.on('connect', () => {
         gameEngine.start();
     })
